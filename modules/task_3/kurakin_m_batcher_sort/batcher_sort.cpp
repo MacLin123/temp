@@ -73,23 +73,23 @@ void CreateSortNet(int numProcs) {
     getOddEvenSortNet(procs);
 }
 
-void CreateArray(std::vector<int> &array) {
-    if (array.size() < 1) return;
+void CreateArray(std::vector<int> *array) {
+    if (array->size() < 1) return;
 
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
 
-    for (uint32_t i = 0; i < array.size(); i++) {
-        array[i] = gen() % 64001 - 32000;
+    for (uint32_t i = 0; i < array->size(); i++) {
+        (*array)[i] = gen() % 64001 - 32000;
     }
     return;
 }
 
-void BatcherSort(std::vector<int> &arrIn) {
+void BatcherSort(std::vector<int> *arrIn) {
     MPI_Status status;
 
     int rank, proc_count;
-    int size = arrIn.size();
+    int size = arrIn->size();
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
 
@@ -104,16 +104,20 @@ void BatcherSort(std::vector<int> &arrIn) {
     int elems_per_proc_size = sizeNew / proc_count;
 
     for (int i = size; i < sizeNew; i++) {
-        arrIn.push_back(INT16_MIN);
+        arrIn->push_back(INT16_MIN);
     }
 
     std::vector<int> elems_res(elems_per_proc_size);
     std::vector<int> elems_cur(elems_per_proc_size);
     std::vector<int> elems_tmp(elems_per_proc_size);
 
-    MPI_Scatter(&arrIn[0], elems_per_proc_size, MPI_INT, &elems_res[0],
+    MPI_Scatter(&(*arrIn)[0], elems_per_proc_size, MPI_INT, &elems_res[0],
                 elems_per_proc_size, MPI_INT, 0, MPI_COMM_WORLD);
-
+    // std::cout << "rank == " << rank << std::endl;
+    // for (int i = 0; i < elems_per_proc_size; i++) {
+    //     std::cout << "rank == " << rank << "value = " << elems_res[i] <<
+    //     std::endl;
+    // }
     std::sort(elems_res.begin(), elems_res.end());
 
     for (uint32_t i = 0; i < comparators.size(); i++) {
@@ -160,12 +164,17 @@ void BatcherSort(std::vector<int> &arrIn) {
         }
     }
     // union
-    MPI_Gather(&elems_res[0], elems_per_proc_size, MPI_INT, &arrIn[0],
+    // std::cout << "rank == " << rank << std::endl;
+    // for (int i = 0; i < elems_per_proc_size; i++) {
+    //     std::cout << "rank == " << rank << "value = " << elems_res[i]
+    //               << std::endl;
+    // }
+    MPI_Gather(&elems_res[0], elems_per_proc_size, MPI_INT, &(*arrIn)[0],
                elems_per_proc_size, MPI_INT, 0, MPI_COMM_WORLD);
 
     int elDiff = sizeNew - size;
     if (rank == 0 && elDiff) {
-        arrIn.erase(arrIn.begin(), arrIn.begin() + elDiff);
+        arrIn->erase(arrIn->begin(), arrIn->begin() + elDiff);
     }
     return;
 }

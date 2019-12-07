@@ -8,8 +8,8 @@
 void GatComparators(std::vector<int> procs_up, std::vector<int> procs_down);
 void getOddEvenSortNet(std::vector<int> procs);
 void CreateSortNet(int numProcs);
-void CreateArray(std::vector<int>&array);
-void BatcherSort(std::vector<int> &arrIn);
+void CreateArray(std::vector<int> *array);
+void BatcherSort(std::vector<int> *arrIn);
 
 
 #endif  // MODULES_TASK_3_KURAKIN_M_BATCHER_SORT_BATCHER_SORT_H_
