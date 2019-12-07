@@ -1,6 +1,5 @@
 // Copyright 2019 Kurakin Mikhail
 #include <gtest/gtest.h>
-#include <cstdlib>
 #include <gtest-mpi-listener.hpp>
 #include "./batcher_sort.h"
 
