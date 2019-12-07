@@ -1,8 +1,8 @@
 // Copyright 2019 Kurakin Mikhail
 #include <gtest/gtest.h>
 #include <gtest-mpi-listener.hpp>
-#include "./batcher_sort.h"
 #include <cstdlib>
+#include "./batcher_sort.h"
 
 TEST(Batcher_Sort_MPI, Output_Arr_Not_Null) {
     int rank;
