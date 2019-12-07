@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <gtest-mpi-listener.hpp>
 #include "./batcher_sort.h"
+#include <cstdlib>
 
 TEST(Batcher_Sort_MPI, Output_Arr_Not_Null) {
     int rank;
@@ -39,7 +40,7 @@ TEST(Batcher_Sort_MPI, Array_sorted_properly) {
     }
     int* arrBatcherSort = BatcherSort(arr, size);
     if (rank == 0) {
-        qsort(arr, size, sizeof(int), compare_int);
+        std::qsort(arr, size, sizeof(int), compare_int);
         bool AreEq = true;
         for (int i = 0; i < size; i++) {
             if (arr[i] != arrBatcherSort[i]) {
@@ -59,7 +60,7 @@ TEST(Batcher_Sort_MPI, Array_sorted_Properly_With_Same_Num) {
     int* arrBatcherSort = BatcherSort(arr, size);
 
     if (rank == 0) {
-        qsort(arr, size, sizeof(int), compare_int);
+        std::qsort(arr, size, sizeof(int), compare_int);
         bool AreEq = true;
         for (int i = 0; i < size; i++) {
             if (arr[i] != arrBatcherSort[i]) {
