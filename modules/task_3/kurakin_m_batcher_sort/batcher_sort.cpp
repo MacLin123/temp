@@ -177,7 +177,7 @@ int *BatcherSort(int *arrIn, int size) {
             }
 
             std::swap(elems_res, elems_tmp);
-        } else if (rank == comparator.b) {
+        } else if (rank == comparator.second) {
             MPI_Recv(elems_cur, elems_per_proc_size, MPI_INT, comparator.first, 0,
                      MPI_COMM_WORLD, &status);
             MPI_Send(elems_res, elems_per_proc_size, MPI_INT, comparator.first, 0,
