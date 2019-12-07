@@ -1,7 +1,7 @@
 // Copyright 2019 Kurakin Mikhail
 #include <gtest/gtest.h>
-#include <gtest-mpi-listener.hpp>
 #include <cstdlib>
+#include <gtest-mpi-listener.hpp>
 #include "./batcher_sort.h"
 
 TEST(Batcher_Sort_MPI, Output_Arr_Not_Null) {
@@ -15,19 +15,38 @@ TEST(Batcher_Sort_MPI, Output_Arr_Not_Null) {
     }
 }
 
-// TEST(Batcher_Sort_MPI, Throw_When_Input_Arr_Is_Null) {
-//     int rank;
-//     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//     int size = 10;
-//     ASSERT_ANY_THROW(BatcherSort(nullptr, size));
-// }
+TEST(Batcher_Sort_MPI, Throw_When_Input_Arr_Is_Null) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int size = 10;
+    ASSERT_ANY_THROW(BatcherSort(nullptr, size));
+}
 
-// TEST(Batcher_Sort_MPI, Throw_Exception_When_Size_Is_Wrong) {
-//     int rank;
-//     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//     int size = 0;
-//     int arr[] = {1, 8, 5, 3, 2, 9, 0, 4, 7, 6};
-//     ASSERT_ANY_THROW(BatcherSort(arr, size));
+TEST(Batcher_Sort_MPI, Throw_Exception_When_Size_Is_Wrong) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int size = 0;
+    int arr[] = {1, 8, 5, 3, 2, 9, 0, 4, 7, 6};
+    ASSERT_ANY_THROW(BatcherSort(arr, size));
+}
+
+// TEST(Batcher_Sort_MPI, Array_sorted_properly) {
+    // int rank;
+    // MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    // int size = 10;
+    // int arr[] = {1, 8, 5, 3, 2, 9, 0, 4, 7, 6};
+    // int* arrBatcherSort = BatcherSort(arr, size);
+    // if (rank == 0) {
+        // qS(arr, size);
+        // bool AreEq = true;
+        // for (int i = 0; i < size; i++) {
+            // if (arr[i] != arrBatcherSort[i]) {
+                // AreEq = false;
+                // break;
+            // }
+        // }
+        // EXPECT_EQ(true, AreEq);
+    // }
 // }
 
 // TEST(Batcher_Sort_MPI, Array_sorted_properly) {

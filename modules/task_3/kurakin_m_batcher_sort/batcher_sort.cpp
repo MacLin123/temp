@@ -6,30 +6,49 @@
 #include <random>
 #include <utility>
 #include <vector>
-#include <cstdlib>
+// #include <cstdlib>
 
-struct TPair {
-    int a;
-    int b;
-};
+// struct std::pair<int,int> {
+//     int a;
+//     int b;
+// };
 
-std::vector<TPair> comparators;
+std::vector<std::pair<int,int>> comparators;
 
-int compare_int(const void *a, const void *b) {
-    if (*static_cast<const int*>(a) < *static_cast< const int*>(b)) {
-        return -1;
-    } else if (*static_cast<const int*>(a) == *static_cast<const int*>(b)) {
-        return 0;
-    } else {
-        return 1;
+// int compare_int(const void *a, const void *b) {
+//     if (*static_cast<const int*>(a) < *static_cast< const int*>(b)) {
+//         return -1;
+//     } else if (*static_cast<const int*>(a) == *static_cast<const int*>(b)) {
+//         return 0;
+//     } else {
+//         return 1;
+//     }
+// }
+
+void qS(int *arr, int size) {
+    int i = 0, j = size - 1, mid = arr[size / 2], temp;
+
+    while (i <= j) {
+        while (arr[i] < mid) i++;
+        while (arr[j] > mid) j--;
+
+        if (i <= j) {
+            temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+            i++;
+            j--;
+        }
     }
+    if (j > 0) qS(arr, j + 1);
+    if (i < size) qS(&arr[i], size - i);
 }
 
 void GatComparators(std::vector<int> procs_up, std::vector<int> procs_down) {
     int procCount = procs_up.size() + procs_down.size();
     if (procCount == 1) return;
     if (procCount == 2) {
-        TPair tmpPair{procs_up[0], procs_down[0]};
+        std::pair<int,int> tmpPair{procs_up[0], procs_down[0]};
         comparators.push_back(tmpPair);
         return;
     }
@@ -61,7 +80,7 @@ void GatComparators(std::vector<int> procs_up, std::vector<int> procs_down) {
               procsAll.begin() + procs_up.size());
 
     for (uint32_t i = 1; i < procsAll.size() - 1; i += 2) {
-        TPair tmpPair{procsAll[i], procsAll[i + 1]};
+        std::pair<int,int> tmpPair{procsAll[i], procsAll[i + 1]};
         comparators.push_back(tmpPair);
     }
 }
@@ -134,13 +153,14 @@ int *BatcherSort(int *arrIn, int size) {
     MPI_Scatter(arrRes, elems_per_proc_size, MPI_INT, elems_res,
                 elems_per_proc_size, MPI_INT, 0, MPI_COMM_WORLD);
 
-    std::qsort(elems_res, elems_per_proc_size, sizeof(int), compare_int);
+    // std::qsort(elems_res, elems_per_proc_size, sizeof(int), compare_int);
+    qS(elems_res,elems_per_proc_size);
     for (uint32_t i = 0; i < comparators.size(); i++) {
-        TPair comparator = comparators[i];
-        if (rank == comparator.a) {
-            MPI_Send(elems_res, elems_per_proc_size, MPI_INT, comparator.b, 0,
+        std::pair<int,int> comparator = comparators[i];
+        if (rank == comparator.first) {
+            MPI_Send(elems_res, elems_per_proc_size, MPI_INT, comparator.second, 0,
                      MPI_COMM_WORLD);
-            MPI_Recv(elems_cur, elems_per_proc_size, MPI_INT, comparator.b, 0,
+            MPI_Recv(elems_cur, elems_per_proc_size, MPI_INT, comparator.second, 0,
                      MPI_COMM_WORLD, &status);
 
             for (int resInd = 0, curInd = 0, tmpInd = 0;
@@ -158,9 +178,9 @@ int *BatcherSort(int *arrIn, int size) {
 
             std::swap(elems_res, elems_tmp);
         } else if (rank == comparator.b) {
-            MPI_Recv(elems_cur, elems_per_proc_size, MPI_INT, comparator.a, 0,
+            MPI_Recv(elems_cur, elems_per_proc_size, MPI_INT, comparator.first, 0,
                      MPI_COMM_WORLD, &status);
-            MPI_Send(elems_res, elems_per_proc_size, MPI_INT, comparator.a, 0,
+            MPI_Send(elems_res, elems_per_proc_size, MPI_INT, comparator.first, 0,
                      MPI_COMM_WORLD);
             int start = elems_per_proc_size - 1;
             for (int resInd = start, curInd = start, tmpInd = start;
