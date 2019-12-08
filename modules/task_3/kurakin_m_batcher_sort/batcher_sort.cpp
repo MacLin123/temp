@@ -113,11 +113,7 @@ void BatcherSort(std::vector<int> *arrIn) {
 
     MPI_Scatter(&(*arrIn)[0], elems_per_proc_size, MPI_INT, &elems_res[0],
                 elems_per_proc_size, MPI_INT, 0, MPI_COMM_WORLD);
-    // std::cout << "rank == " << rank << std::endl;
-    // for (int i = 0; i < elems_per_proc_size; i++) {
-    //     std::cout << "rank == " << rank << "value = " << elems_res[i] <<
-    //     std::endl;
-    // }
+
     std::sort(elems_res.begin(), elems_res.end());
 
     for (uint32_t i = 0; i < comparators.size(); i++) {
@@ -163,12 +159,7 @@ void BatcherSort(std::vector<int> *arrIn) {
             elems_res.swap(elems_tmp);
         }
     }
-    // union
-    // std::cout << "rank == " << rank << std::endl;
-    // for (int i = 0; i < elems_per_proc_size; i++) {
-    //     std::cout << "rank == " << rank << "value = " << elems_res[i]
-    //               << std::endl;
-    // }
+
     MPI_Gather(&elems_res[0], elems_per_proc_size, MPI_INT, &(*arrIn)[0],
                elems_per_proc_size, MPI_INT, 0, MPI_COMM_WORLD);
 
